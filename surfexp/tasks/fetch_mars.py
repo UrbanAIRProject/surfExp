@@ -16,10 +16,10 @@ class FetchMars(PySurfexBaseTask):
     def __init__(self, config):
         """Construct assim task.
 
-    Args:
+        Args:
             config (dict): Actual configuration dict
 
-    """
+        """
         PySurfexBaseTask.__init__(self, config, name="FetchMars")
         try:
             mode = self.config["task.args.mode"]
