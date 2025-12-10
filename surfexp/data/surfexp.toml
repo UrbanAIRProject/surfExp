@@ -1,0 +1,280 @@
+[general]
+  loglevel = "INFO"
+  os_macros = ["HOME"]
+  realization = ""
+  realizations = []
+  tstep = 60
+
+[general.plugin_registry.plugins]
+  surfexp = "@PLUGIN_HOME@"
+
+[general.times]
+  cycle_length = "PT3H"
+
+#
+# SURFEX experiment configuration file
+#
+
+[assim]
+  update_snow_cycles = []
+
+[compile]
+  ####################################################################################################
+  # Compilation settings
+  #####################################################################################################
+  build = true # Turn on or off the compilation and binary build (true/false)
+  build_config = ""
+  ial_source = ""
+
+[offline]
+  deode = false
+  tolerate_missing = false
+
+[pgd]
+  clay_format = "direct"
+  clay_input = "soilgrid"
+  sand_format = "direct"
+  sand_input = "soilgrid"
+  soc_format = "direct"
+  soc_input = "soilgrid"
+  tolerate_missing = false
+  zs_format = "direct"
+  zs_input = "gmted2010"
+
+[prep]
+  deode = false
+  tolerate_missing = false
+
+[soda]
+  deode = false
+  tolerate_missing = false
+
+[suite_control]
+  create_static_data = true
+  do_marsprep = false
+  do_pgd = true
+  do_prep = true
+  do_verification = true
+  interpolate2grid = false
+  suite_definition = "SurfexSuiteDefinition"
+
+[system]
+  archive_dir = "@casedir@/archive/@YYYY@/@MM@/@DD@/@HH@/"
+  assemble_file = "@PLUGIN_HOME@/surfexp/data/config/nam/default_assemble.yml"
+  binary_input_files = "@PLUGIN_HOME@/surfexp/data/config/input/binary_input_data.json"
+  bindir = "@casedir@/offline/exe"
+  climdir = "@casedir@/climate/@DOMAIN@/"
+  extrarch_dir = "@casedir@/archive/extract/"
+  forcing_dir = "@casedir@/forcing/@YYYY@@MM@@DD@@HH@/"
+  namelist_defs = "@PLUGIN_HOME@/surfexp/data/config/nam/surfex_namelists.yml"
+  obs_dir = "@casedir@/archive/observations/@YYYY@/@MM@/@DD@/@HH@/"
+  sfx_input_definition = "@PLUGIN_HOME@/surfexp/data/config/input/binary_input_data.json"
+
+[troika]
+  config_file = "@PLUGIN_HOME@/surfexp/data/config/troika/troika_config.yml"
+
+[verification.cycle]
+  variables = ["T2M", "HU2M"]
+
+[verification.cycle.HU2M]
+  harp_param = "HU2m"
+  harp_param_unit = "%"
+
+[verification.cycle.T2M]
+  harp_param = "T2m"
+  harp_param_unit = "K"
+
+[verification.forecast]
+  variables = ["T2M", "HU2M"]
+
+[verification.forecast.HU2M]
+  harp_param = "HU2m"
+  harp_param_unit = "%"
+
+[verification.forecast.T2M]
+  harp_param = "T2m"
+  harp_param_unit = "K"
+
+#####################################################################################################
+# Geometry
+#####################################################################################################
+
+###########################################################################################################################
+
+[an_forcing]
+  enabled = false
+  variables = ["t2m", "rh2m"]
+
+[forcing]
+  modify_forcing = true
+
+[forcing.args.default]
+  # After 2023013123
+  #pattern = "https://thredds.met.no/thredds/dodsC/metpparchive/@YYYY@/@MM@/@DD@/met_analysis_1_0km_nordic_@YYYY@@MM@@DD@T@HH@Z.nc"
+  # Before 2023020100
+  pattern = "https://thredds.met.no/thredds/dodsC/metpparchivev3/@YYYY@/@MM@/@DD@/met_analysis_1_0km_nordic_@YYYY@@MM@@DD@T@HH@Z.nc"
+  # Local file system paths at MET-Norway
+  # pattern = "/lustre/storeB/project/metproduction/products/yr_short/met_analysis_1_0km_nordic_@YYYY@@MM@@DD@T@HH@Z.nc"
+  # pattern = "/lustre/storeB/immutable/archive/projects/metproduction/yr_short//@YYYY@/@MM@/@DD@/met_analysis_1_0km_nordic_@YYYY@@MM@@DD@T@HH@Z.nc
+  # pattern = "/lustre/storeB/project/metkl/klinogrid/archive/met_nordic_analysis/v3/@YYYY@/@MM@/@DD@/met_analysis_1_0km_nordic_@YYYY@@MM@@DD@T@HH@Z.nc"
+  analysis = true
+  co2 = "constant"
+  debug = true
+  dir-sw-converter = "analysis"
+  diskless-write = true
+  input-format = "netcdf"
+  interpolation = "bilinear"
+  lw-converter = "analysis"
+  ps-converter = "mslp2ps"
+  qa-converter = "rh2q_mslp"
+  rain-converter = "calcrain"
+  sca-sw = "constant"
+  snow-converter = "calcsnow"
+  timestep = 3600
+  uref = "screen"
+  uval = "constant"
+  wind-converter = "none"
+  wind-dir-converter = "none"
+  zref = "screen"
+  zsoro-converter = "none"
+  zval = "constant"
+
+[forecast]
+  #####################################################################################################
+  #  Forecast model (physics + dynamics and output)
+  #####################################################################################################
+
+  ensmsel = [] # Ensemble members to run (list with member numbers)
+  forc_zs = true
+  physics = "arome"
+
+[initial_conditions]
+
+[initial_conditions.fg4oi.analysis]
+
+[initial_conditions.fg4oi.analysis.altitude]
+  basetime = "@BASETIME@"
+  converter = "none"
+  inputfile = "@climdir@/PGD_@DECADE@.nc"
+  inputtype = "surfex"
+  outfile-var = "altitude"
+  variable = "ZS"
+
+[initial_conditions.fg4oi.analysis.laf]
+  converter = "nature_town"
+  converter-variables = ["nature", "town"]
+  nature-basetime = "@BASETIME@"
+  nature-inputfile = "@climdir@/PGD_@DECADE@.nc"
+  nature-inputtype = "surfex"
+  nature-variable = "FRAC_NATURE"
+  outfile-var = "land_area_fraction"
+  town-basetime = "@BASETIME@"
+  town-inputfile = "@climdir@/PGD_@DECADE@.nc"
+  town-inputtype = "surfex"
+  town-variable = "FRAC_NATURE"
+
+[initial_conditions.fg4oi.analysis.rh2m]
+  basetime = "@FG_BASETIME@"
+  converter = "none"
+  fcint = "10800"
+  file-inc = "3600"
+  inputfile = "@casedir@/archive/@FG_YYYY@/@FG_MM@/@FG_DD@/@FG_HH@/SURFOUT.@YYYY@@MM@@DD@_@HH_LL@h00.nc"
+  inputtype = "surfex"
+  outfile-var = "relative_humidity_2m"
+
+[initial_conditions.fg4oi.analysis.sd]
+  basetime = "@FG_BASETIME@"
+  converter = "none"
+  fcint = "10800"
+  file-inc = "3600"
+  inputfile = "@casedir@/archive/@FG_YYYY@/@FG_MM@/@FG_DD@/@FG_HH@/SURFOUT.@YYYY@@MM@@DD@_@HH_LL@h00.nc"
+  inputtype = "surfex"
+  outfile-var = "surface_snow_thickness"
+
+[initial_conditions.fg4oi.analysis.t2m]
+  basetime = "@FG_BASETIME@"
+  converter = "none"
+  fcint = "10800"
+  file-inc = "3600"
+  inputfile = "@casedir@/archive/@FG_YYYY@/@FG_MM@/@FG_DD@/@FG_HH@/SURFOUT.@YYYY@@MM@@DD@_@HH_LL@h00.nc"
+  inputtype = "surfex"
+  outfile-var = "air_temperature_2m"
+
+[mars]
+
+[mars.an_forcing]
+  config = "sfx_hres"
+
+[mars.default]
+  config = "sfx_hres"
+
+[mars.prep]
+  config = "sfx_hres"
+
+[mars.sfx_dt]
+  class = "RD"
+  expver = "iekm"
+
+[mars.sfx_hres]
+  class = "OD"
+  expver = "1"
+  grid = "0.01/0.01"
+
+##################################################################################################################
+[observations]
+  ###################################################################################################################
+
+  #---------------------------------------------------
+  #  TITAN observation settings
+  #---------------------------------------------------
+  cryo_obs_sd = false # Use cryoclim snow pseudo-observations
+  netatmo_filepattern = "@casedir@/archive/observations/@YYYY@/@MM@/@DD@/@HH@/"
+  netatmo_obs_rh2m = false # 2m relative humidity observations from Netatmo stations
+  netatmo_obs_t2m = false # 2m air temperature observations from Netatmo stations
+  synop_obs_rh2m = true # SYNOP 2m relative humidity from bufr files
+  synop_obs_sd = true # SYNOP snow depth from bufr files
+  synop_obs_t2m = true # SYNOP 2m air temperature from bufr files
+  # netatmo_filepattern = "/lustre/storeB/project/metproduction/products/netatmo/@YYYY@/@MM@/@DD@/@YYYY@@MM@@DD@T@HH@@mm@01Z.json"
+  # netatmo_filepattern = "/tmp/host1/testdata/@YYYY@@MM@@DD@T@HH@@mm@*Z_all.json"
+  cryo_fg_threshold = 0.4
+  cryo_filepattern = "@casedir@/archive/observations/@YYYY@/@MM@/@DD@/@HH@/daily-avhrr-sce-nhl_ease-50_@YYYY@@MM@@DD@@HH@"
+  cryo_laf_threshold = 0.1
+  cryo_new_snow = 0.1
+  cryo_perm_snow_file = "@CLIMDIR@/PGD@DECADE@.nc"
+  cryo_slope_file = "@CLIMDIR@/PGD@DECADE@.nc"
+  cryo_step = 2
+  cryo_var_name = "classed_value_c"
+  filepattern = "@casedir@/archive/observations/@YYYY@/@MM@/@DD@/@HH@/ob@YYYY@@MM@@DD@@HH@"
+
+[Observations.oi.rh2m]
+  hlength = 30000
+  vlength = 400
+
+[observations.oi.sd]
+  hlength = 60000
+  vlength = 300
+
+[observations.oi.t2m]
+  gradient = -0.0065
+  hlength = 30000
+  vlength = 400
+
+[observations.qc]
+  # tests = ["domain", "blacklist", "nometa", "redundancy", "plausibility", "sct"]
+  tests = ["domain", "nometa", "plausibility", "sct"]
+
+[observations.qc.sd]
+  tests = ["domain", "nometa", "plausibility", "firstguess"]
+
+############################################################################################################################
+
+[eps.general]
+  control_member = 0
+  members = "0:0"
+  run_continously = false
+
+[eps.member_settings.boundaries.ifs]
+  selection = {"1:3" = "IFSENS"}
+
+[eps.member_settings.general]
+  realization = "-1"

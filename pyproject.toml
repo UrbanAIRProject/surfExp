@@ -1,0 +1,223 @@
+[tool.poetry]
+  authors = ["Trygve Aspelien <trygveasp@met.no>"]
+  description = "surfExp"
+  include = [{path = "surfexp/data", format = ["sdist", "wheel"]}]
+  name = "surfexp"
+  license = "Apache-2.0"
+  readme = "README.rst"
+  version = "0.4.1"
+
+[tool.poetry.scripts]
+  execute_task = "surfexp.templates.cli:execute_task"
+  surfExp = "surfexp.cli:pysfxexp"
+
+[build-system]
+  build-backend = "poetry.core.masonry.api"
+  requires = ["poetry-core >= 1.2.0"]
+
+[tool.poetry.dependencies]
+  deode = {git = "git@github.com:destination-earth-digital-twins/Deode-Workflow.git", develop = false, branch = "v0.16.1"}
+  pysurfex = {git = "https://github.com/metno/pysurfex.git", develop = false, branch = "0.1.1", extras = ["plot", "verification"]}
+  python = ">=3.10,<3.13"
+
+[tool.poetry.group.doc.dependencies]
+  coveralls = "^3.3.1"
+  sphinx = "^6.1.3"
+  sphinx-rtd-theme = "^1.2.0"
+
+[tool.poetry.group.linting.dependencies]
+  black = {extras = ["jupyter"], version = "^23.10.0"}
+  isort = "^5.12.0"
+  poethepoet = {extras = ["poetry-plugin"], version = "^0.34.0"}
+  pydoclint = "^0.3.8" # Replaces darglint, but is maintained & faster
+  ruff = "^0.11.0"
+  toml-formatter = {git = "https://github.com/paulovcmedeiros/toml-formatter"}
+
+[tool.poetry.group.test.dependencies]
+  pytest = "^7.2.2"
+  pytest-cov = "^4.1.0"
+  pytest-mock = "^3.7.0"
+  pytest-profiling = "^1.7.0"
+  pytest-timeout = "^2.1.0"
+  pytest-xdist = "^3.2.0"
+
+  ##################
+  # Linter configs #
+  ##################
+
+[tool.black]
+  line-length = 90
+
+[tool.flakeheaven]
+  exclude = [".*/", "tmp/", "*/tmp/", "*.ipynb"]
+  format = "colored"
+  # Show line of source code in output, with syntax highlighting
+  show_source = true
+  style = "google"
+
+# list of plugins and rules for them
+[tool.flakeheaven.plugins]
+  # Deactivate all rules for all plugins by default
+  "*" = ["-*"]
+  # Activate only those plugins not covered by ruff
+  pydoclint = []
+
+[tool.isort]
+  line_length = 90
+  profile = "black"
+
+[tool.ruff]
+  ignore = [
+    "C901",
+    "D105",
+    "EXE001",
+    "PLE1205",
+    "PLR0912",
+    "PLR0915",
+    "PLR0913",
+    "PLR2004",
+    "RET504",
+    "RUF012",
+  ]
+  line-length = 90
+  select = [
+    "A",
+    "ARG",
+    "B",
+    "BLE",
+    "C4",
+    "C90",
+    "D",
+    "E",
+    "ERA",
+    "EXE",
+    "F",
+    "G",
+    "I",
+    "N",
+    "PD",
+    "PERF",
+    "PIE",
+    "PL",
+    "PT",
+    "Q",
+    "RET",
+    "RSE",
+    "RUF",
+    "S",
+    "SIM",
+    "SLF",
+    "T20",
+    "W",
+  ]
+
+[tool.ruff.per-file-ignores]
+  # S101: Use of `assert` detected
+  "scheduler.py" = ["T201"]
+  "tests/**/*.py" = [
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D105",
+    "D106",
+    "D107",
+    "E501",
+    "S101",
+    "SLF001",
+  ]
+
+[tool.ruff.pydocstyle]
+  convention = "google"
+
+[tool.toml-formatter]
+  indentation = 2
+  section_order_overrides = [
+    "^general$",
+    "general.*",
+    "^tool.poetry$",
+    "^tool.poetry.scripts$",
+    "build-system",
+    "tool.poetry.*",
+  ]
+
+  ##################
+  # pytest configs #
+  ##################
+
+[tool.pytest.ini_options]
+  addopts = "-v --failed-first --cov-report=term-missing --cov-report=term:skip-covered --cov-report=xml:.coverage.xml --cov=./"
+  log_cli_level = "INFO"
+  testpaths = ["tests/smoke", "tests/unit"]
+
+  ####################################
+  # Leave configs for `poe` separate #
+  ####################################
+
+[tool.poe]
+  poetry_command = "devtools"
+
+[tool.poe.tasks]
+  # Doc-related stuff
+  _doc_build.shell = """
+    surfexp doc config >| docs/markdown_docs/config.md
+    sphinx-apidoc surfexp -o docs/ --force --no-toc --module-first
+    sphinx-build docs docs/_build/
+    touch docs/_build/.nojekyll
+  """
+  # Linting tasks
+  _black = "black ."
+  _isort = "isort ."
+  _ruff = "ruff check ."
+  _toml_formatter = "toml-formatter check ."
+  # Test-related tasks
+  pytest = "pytest"
+  # Tasks to be run as pre-push checks
+  pre-push-checks = ["lint", "doc clean", "doc build", "pytest"]
+
+[tool.poe.tasks._flake8]
+  cmd = "flakeheaven lint ."
+  env = {FLAKEHEAVEN_CACHE_TIMEOUT = "0"}
+
+[tool.poe.tasks.doc]
+  args = [
+    {name = "doc_action", positional = true, help = "{all,clean,build,view}", default = "all"},
+  ]
+  control = {expr = "doc_action"}
+
+[[tool.poe.tasks.doc.switch]]
+  case = "all"
+  sequence = ["doc build", "doc view"]
+
+[[tool.poe.tasks.doc.switch]]
+  case = "clean"
+  cmd = "rm -rf docs/_build/ docs/deode.rst docs/markdown_docs/config.md"
+
+[[tool.poe.tasks.doc.switch]]
+  case = "build"
+  sequence = ["doc clean", "_doc_build"]
+
+[[tool.poe.tasks.doc.switch]]
+  case = "view"
+  sequence = [
+    {shell = "[ ! -f docs/_build/index.html ] && poetry devtools doc build || exit 0"},
+    {script = "webbrowser:open('docs/_build/index.html')"},
+  ]
+
+[tool.poe.tasks.lint]
+  args = [{name = "fix", type = "boolean", default = false}]
+  control = {expr = "fix"}
+
+[[tool.poe.tasks.lint.switch]]
+  case = "True"
+  sequence = ["_isort", "_black", "_ruff --fix", "_toml_formatter --fix"]
+
+[[tool.poe.tasks.lint.switch]]
+  case = "False"
+  sequence = [
+    "_isort --check-only",
+    "_black --check --diff",
+    "_ruff",
+    "_toml_formatter",
+  ]

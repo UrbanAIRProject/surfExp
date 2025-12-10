@@ -1,0 +1,137 @@
+# SURFEX offline experiment configuration file
+#
+
+                                        # The LL_LIST list is wrapped around if necessary, to fit HH_LIST
+
+[compile]
+  ####################################################################################################
+  # Compilation settings
+  #####################################################################################################
+  build = true # Turn on or off the compilation and binary build (true/false)
+
+[forcing]
+  co2 = "constant"
+  debug = false
+  input_format = "netcdf"
+  pattern = "https://thredds.met.no/thredds/dodsC/meps25epsarchive/@YYYY@/@MM@/@DD@/meps_det_2_5km_@YYYY@@MM@@DD@T@HH@Z.nc"
+  rain_converter = "totalprec"
+  sca_sw = "constant"
+  uref = "ml"
+  uval = "constant"
+  wind_converter = "windspeed"
+  winddir_converter = "winddir"
+  zref = "ml"
+  zsoro_converter = "phi2m"
+  zval = "constant"
+
+[forecast]
+  #####################################################################################################
+  #  Forecast model (physics + dynamics and output)
+  #####################################################################################################
+
+  ensmsel = [] # Ensemble members to run (list with member numbers)
+  physics = "arome"
+
+  forc_zs = true
+
+[initial_conditions.fg4oi]
+  converter = "none"
+  fileformat = "netcdf"
+  inputfile = "https://thredds.met.no/thredds/dodsC/meps25epsarchive/@YYYY@/@MM@/@DD@/meps_det_2_5km_@YYYY@@MM@@DD@T@HH@Z.nc"
+
+[initial_conditions.fg4oi.air_temperature_2m]
+
+[initial_conditions.fg4oi.altitude]
+  converter = "phi2m"
+
+[initial_conditions.fg4oi.relative_humidity_2m]
+
+[initial_conditions.fg4oi.surface_snow_thickness]
+  converter = "sweclim"
+
+[observations]
+  netatmo_filepattern = "@casedir@/archive/observations/@YYYY@/@MM@/@DD@/@HH@/@YYYY@@MM@@DD@T@HH@@mm@*Z*.json"
+
+[offline]
+  blocks = [
+    "io",
+    "constants",
+    "treedrag",
+    "treedrag_no_vector",
+    "treedrag_scale_trees",
+    "ecoclimap_sg",
+    "offline",
+    "offline_sso",
+    "offline_sso_none",
+    "offline_seaice",
+    "offline_flake",
+    "offline_isba",
+    "offline_pert_isba_settings",
+    "offline_teb",
+    "offline_selected_output",
+  ]
+  deode = false
+
+[pgd]
+  blocks = [
+    "io",
+    "constants",
+    "treedrag",
+    "treedrag_no_vector",
+    "pgd",
+    "ecoclimap_sg",
+    "pgd_isba",
+    "pgd_seaflx",
+    "pgd_teb",
+    "pgd_watflx",
+    "pgd_cover",
+    "pgd_arrange_cover",
+    "pgd_cover_direct",
+    "pgd_cover_lrm_river_true",
+    "pgd_cv_sg",
+    "pgd_rsmin_sg",
+    "pgd_ecoclimap_sg",
+    "pgd_ecoclimap_sg_single_decade",
+    "pgd_ecoclimap_sg_single_decade_albnir_soil_dirtyp",
+    "pgd_ecoclimap_sg_single_decade_albnir_veg_dirtyp",
+    "pgd_ecoclimap_sg_single_decade_albvis_soil_dirtyp",
+    "pgd_ecoclimap_sg_single_decade_albvis_veg_dirtyp",
+    "pgd_ecoclimap_sg_single_decade_lai_dirtyp",
+    "pgd_ecoclimap_sg_single_decade_tree_height_dirtyp",
+    "pgd_zs",
+    "pgd_zs_direct",
+    "pgd_sea",
+    "pgd_isba",
+    "pgd_isba_sand_direct",
+    "pgd_isba_clay_direct",
+    "meb",
+    "pgd_meb",
+  ]
+  deode = false
+
+[prep]
+  blocks = [
+    "io",
+    "constants",
+    "treedrag",
+    "treedrag_no_vector",
+    "prep",
+    "ecoclimap_sg",
+    "prep_from_namelist",
+    "prep_seaflux",
+    "prep_isba",
+    "prep_isba_snow",
+    "meb",
+  ]
+  deode = false
+
+[soda]
+  blocks = [
+    "io",
+    "treedrag",
+    "treedrag_no_vector",
+    "ecoclimap_sg",
+    "soda",
+    "soda_obs",
+    "soda_isba_ekf",
+  ]
