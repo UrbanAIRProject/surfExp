@@ -1,0 +1,92 @@
+#.github/workflows/tests.yaml
+name: Unit Tests
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - '**' # Every branch
+
+env:
+  USER: "github_runner"
+  HOME: "/tmp"
+
+jobs:
+  tests:
+    if: github.repository_owner == 'destination-earth-digital-twins'
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ "ubuntu-latest" ]
+        env: [ "pytest" ]
+        python-version: [ "3.11" ]
+
+    name: "${{ matrix.os }}, python=${{ matrix.python-version }}"
+    runs-on: ${{ matrix.os }}
+
+    container:
+      image: python:${{ matrix.python-version }}-bullseye
+      env:
+        COVERAGE_FILE: ".coverage.${{ matrix.env }}.${{ matrix.python-version }}"
+
+    steps:
+      #----------------------------------------------
+      #           check-out repo
+      #----------------------------------------------
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-file: environment.yml
+          init-shell: >-
+            bash
+          cache-environment: true
+          post-cleanup: 'all'
+
+      #----------------------------------------------
+      #  --- configure poetry & install project  ----
+      #----------------------------------------------
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Modify pyproject.toml
+        env:
+          GITHUB_TOKEN: ${{secrets.GH_REPO_READ_TOKEN}}
+        run: |
+          sed -i 's#git+ssh@github.com:destination-earth-digital-twins/#git+https://${GITHUB_TOKEN}@#github.com/destination-earth-digital-twins/#g' pyproject.toml
+
+      - name: Load cached venv (if cache exists)
+        id: cached-poetry-dependencies
+        uses: actions/cache@v5
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
+
+      - name: Install dependencies (if venv cache is not found)
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: |
+          cat pyproject.toml
+          poetry install --no-interaction --no-root --only main,test
+        shell: micromamba-shell {0}       
+       
+      - name: Install the project itself
+        run: |
+          cat pyproject.toml 
+          poetry install --no-interaction --only-root
+        shell: micromamba-shell {0}
+
+      #----------------------------------------------
+      #      run test suite and report coverage
+      #----------------------------------------------
+      - name: Run tests
+        run: |
+          poetry run pytest
+        shell: micromamba-shell {0}
+
+
