@@ -15,9 +15,9 @@ on:
       - '**.py'
 
 jobs:
-  env:
-    GITHUB_TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
   linting:
+    env:
+      GITHUB_TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
     if: github.repository_owner == 'destination-earth-digital-twins'
     name: Run Linters
     runs-on: ubuntu-latest

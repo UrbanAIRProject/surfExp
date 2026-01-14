@@ -14,9 +14,9 @@ env:
   HOME: "/tmp"
 
 jobs:
-  env:
-    GITHUB_TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
   tests:
+    env:
+      GITHUB_TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
     if: github.repository_owner == 'destination-earth-digital-twins'
     strategy:
       fail-fast: true
