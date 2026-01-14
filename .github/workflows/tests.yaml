@@ -76,7 +76,12 @@ jobs:
           cat pyproject.toml
           poetry install --no-interaction --no-root --only main,test
         shell: micromamba-shell {0}       
-       
+      
+      - name: Set github credentials
+        uses: ./.github/actions/setup-github-credentials
+        with:
+          github_token: ${{ env.GITHUB_TOKEN }}
+ 
       - name: Install the project itself
         run: |
           cat pyproject.toml 

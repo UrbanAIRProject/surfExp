@@ -55,6 +55,11 @@ jobs:
           path: .venv
           key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/pyproject.toml') }}
 
+      - name: Set github credentials
+        uses: ./.github/actions/setup-github-credentials
+        with:
+          github_token: ${{ env.GITHUB_TOKEN }}
+
       - name: Install dependencies (if venv cache is not found)
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root --only linting
