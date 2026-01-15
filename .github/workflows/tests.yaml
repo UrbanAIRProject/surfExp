@@ -47,8 +47,8 @@ jobs:
 
       - uses: mamba-org/setup-micromamba@v2
         with:
-          env:
-            GITHUB_TOKEN: ${{secrets.GH_REPO_READ_TOKEN}}
+          #env:
+          #  GITHUB_TOKEN: ${{secrets.GH_REPO_READ_TOKEN}}
           environment-file: environment.yml
           init-shell: >-
             bash
@@ -68,7 +68,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{secrets.GH_REPO_READ_TOKEN}}
         run: |
-          sed -i 's#deode@git+ssh://git#deode@git+https://${GITHUB_TOKEN}#g' pyproject.toml
+          sed -i 's#deode@git+ssh://git#deode@/tmp/micromamba/envs/surfExp/src/Deode-Workflow#g' pyproject.toml
 
       - name: Load cached venv (if cache exists)
         id: cached-poetry-dependencies
@@ -82,7 +82,10 @@ jobs:
         with:
           github_token: ${{ env.GITHUB_TOKEN }}
 
-      #- name: Test clone
+      #- name: Set token
+      #  run:
+      #    - echo '{"env_vars": {"GITHUB_TOKEN": "'${GITHUB_TOKEN}'"}}"' > $CONDA_PREFIX/conda-meta/state
+      #    
       #  env:
       #    GITHUB_TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
       #  run: |
@@ -96,7 +99,7 @@ jobs:
           cat pyproject.toml
           #git clone --recurse-submodules -- https://${GITHUB_TOKEN}@github.com/destination-earth-digital-twins/Deode-Workflow.git /tmp/micromamba/envs/surfExp/src/Deode-Workflow
           poetry install --no-interaction --no-root --extras test
-        shell: micromamba-shell {0}       
+        #shell: micromamba-shell {0}       
       
       - name: Install the project itself
         run: |
