@@ -26,12 +26,21 @@ def tmp_directory(tmp_path_factory):
 
 
 @pytest.fixture(scope="module")
-def deode_config(tmp_directory):
+def module_initfile(tmp_directory):
+    module_initfile = f"{tmp_directory}/module_initfile"
+    os.system(f"touch {module_initfile}")  # noqa S605
+    return module_initfile
+
+
+@pytest.fixture(scope="module")
+def deode_config(tmp_directory, module_initfile):
     output_file = f"{tmp_directory}/config_deode.toml"
     with open(f"{tmp_directory}/mods.toml", mode="w") as fhandler:
         fhandler.write("[platform]\n")
         fhandler.write(f'scratch = "{tmp_directory}"\n')
         fhandler.write('unix_group = "suv"\n')
+        fhandler.write("[submission]\n")
+        fhandler.write(f'module_initfile = "{module_initfile}"\n')
 
     argv = [
         "-o",
@@ -64,14 +73,16 @@ def default_config(default_config_file):
 
 
 @pytest.fixture(scope="module")
-def default_config_file(tmp_directory):
-    output_file_static = "/home/trygveasp/projects/surfExp/config.toml"
+def default_config_file(tmp_directory, module_initfile):
+    output_file_static = "static_config.toml"
     if True:
         output_file = f"{tmp_directory}/config_default.toml"
         with open(f"{tmp_directory}/mods.toml", mode="w", encoding="utf8") as fhandler:
             fhandler.write("[platform]\n")
             fhandler.write(f'scratch = "{tmp_directory}"\n')
             fhandler.write('unix_group = "suv"\n')
+            fhandler.write("[submission]\n")
+            fhandler.write(f'module_initfile = "{module_initfile}"\n')
         argv = [
             "-o",
             output_file,

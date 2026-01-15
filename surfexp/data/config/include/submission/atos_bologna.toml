@@ -51,6 +51,9 @@
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=16"
 
+[submission.task_exceptions.FetchMarsPrep.BATCH]
+  MEM = "#SBATCH --mem=32GB"
+
 [submission.task_exceptions.Forcing.BATCH]
   MEM = "#SBATCH --mem=200GB"
   WALLTIME = "#SBATCH --time=01:00:00"
@@ -76,9 +79,6 @@
 
 [submission.task_exceptions.Marsprep]
   bindir = "/usr/local/bin/"
-
-[submission.task_exceptions.FetchMarsPrep.BATCH]
-  MEM = "#SBATCH --mem=32GB"
 
 [submission.task_exceptions.OfflineForecast.BATCH]
   #  MEM = "#SBATCH --mem=200GB"

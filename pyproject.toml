@@ -2,8 +2,8 @@
   authors = ["Trygve Aspelien <trygveasp@met.no>"]
   description = "surfExp"
   include = [{path = "surfexp/data", format = ["sdist", "wheel"]}]
-  name = "surfexp"
   license = "Apache-2.0"
+  name = "surfexp"
   readme = "README.rst"
   version = "0.4.0"
 
@@ -221,4 +221,3 @@
     "_ruff",
     "_toml_formatter",
   ]
-

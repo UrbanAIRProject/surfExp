@@ -79,13 +79,7 @@ jobs:
       #----------------------------------------------
       #         Run the linting checks
       #----------------------------------------------
-      - name: isort
+      - name: Run linters
         run: |
-          poetry run isort --check-only .
-      - name: black
-        run: |
-          poetry run black --check --diff .
-      - name: flakeheaven
-        run: |
-          export FLAKEHEAVEN_CACHE="${TMPDIR:-${TEMP:-${TMP:-/tmp}}}/flakeheaven_cache.$(openssl rand -hex 12)"
-          poetry run flakeheaven lint .
+          poetry run poetry devtools lint
+
