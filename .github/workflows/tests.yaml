@@ -82,14 +82,11 @@ jobs:
         with:
           github_token: ${{ env.GITHUB_TOKEN }}
 
-      #- name: Set token
-      #  run:
-      #    - echo '{"env_vars": {"GITHUB_TOKEN": "'${GITHUB_TOKEN}'"}}"' > $CONDA_PREFIX/conda-meta/state
-      #    
-      #  env:
-      #    GITHUB_TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
-      #  run: |
-      #    git clone --recurse-submodules -- https://${GITHUB_TOKEN}@github.com/destination-earth-digital-twins/Deode-Workflow.git /tmp/micromamba/envs/surfExp/src/Deode-Workflow
+      - name: Clone repo1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
+        run: |
+          git clone --recurse-submodules -- https://${GITHUB_TOKEN}@github.com/destination-earth-digital-twins/Deode-Workflow.git Deode-Workflow-test1
 
       - name: Install dependencies (if venv cache is not found)
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
@@ -97,7 +94,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
         run: |
           cat pyproject.toml
-          #git clone --recurse-submodules -- https://${GITHUB_TOKEN}@github.com/destination-earth-digital-twins/Deode-Workflow.git /tmp/micromamba/envs/surfExp/src/Deode-Workflow
+          git clone --recurse-submodules -- https://${GITHUB_TOKEN}@github.com/destination-earth-digital-twins/Deode-Workflow.git Deode-Workflow-test2
           poetry install --no-interaction --no-root --extras test
         #shell: micromamba-shell {0}       
       
@@ -105,7 +102,7 @@ jobs:
         run: |
           cat pyproject.toml 
           poetry install --no-interaction --only-root
-        shell: micromamba-shell {0}
+        #shell: micromamba-shell {0}
 
       #----------------------------------------------
       #      run test suite and report coverage
@@ -113,6 +110,6 @@ jobs:
       - name: Run tests
         run: |
           poetry run pytest
-        shell: micromamba-shell {0}
+        #shell: micromamba-shell {0}
 
 
