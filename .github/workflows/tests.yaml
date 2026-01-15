@@ -80,8 +80,16 @@ jobs:
         with:
           github_token: ${{ env.GITHUB_TOKEN }}
 
+     - name: Test clone
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
+        run: |
+          git clone --recurse-submodules -- https://${GITHUB_TOKEN}@github.com/destination-earth-digital-twins/Deode-Workflow.git /tmp/micromamba/envs/surfExp/src/Deode-Workflow
+
       - name: Install dependencies (if venv cache is not found)
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
         run: |
           cat pyproject.toml
           git clone --recurse-submodules -- https://${GITHUB_TOKEN}@github.com/destination-earth-digital-twins/Deode-Workflow.git /tmp/micromamba/envs/surfExp/src/Deode-Workflow
