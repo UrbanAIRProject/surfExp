@@ -47,6 +47,8 @@ jobs:
 
       - uses: mamba-org/setup-micromamba@v2
         with:
+          env:
+            GITHUB_TOKEN: ${{secrets.GH_REPO_READ_TOKEN}}
           environment-file: environment.yml
           init-shell: >-
             bash
@@ -80,11 +82,11 @@ jobs:
         with:
           github_token: ${{ env.GITHUB_TOKEN }}
 
-      - name: Test clone
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
-        run: |
-          git clone --recurse-submodules -- https://${GITHUB_TOKEN}@github.com/destination-earth-digital-twins/Deode-Workflow.git /tmp/micromamba/envs/surfExp/src/Deode-Workflow
+      #- name: Test clone
+      #  env:
+      #    GITHUB_TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
+      #  run: |
+      #    git clone --recurse-submodules -- https://${GITHUB_TOKEN}@github.com/destination-earth-digital-twins/Deode-Workflow.git /tmp/micromamba/envs/surfExp/src/Deode-Workflow
 
       - name: Install dependencies (if venv cache is not found)
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
@@ -92,7 +94,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
         run: |
           cat pyproject.toml
-          git clone --recurse-submodules -- https://${GITHUB_TOKEN}@github.com/destination-earth-digital-twins/Deode-Workflow.git /tmp/micromamba/envs/surfExp/src/Deode-Workflow
+          #git clone --recurse-submodules -- https://${GITHUB_TOKEN}@github.com/destination-earth-digital-twins/Deode-Workflow.git /tmp/micromamba/envs/surfExp/src/Deode-Workflow
           poetry install --no-interaction --no-root --extras test
         shell: micromamba-shell {0}       
       
