@@ -51,7 +51,7 @@ jobs:
 
       - name: Modify pyproject.toml
         run: |
-          sed -i 's#deode@git+ssh://git#deode@git+https://${GITHUB_TOKEN}#g' pyproject.toml
+          sed -i 's#git@github.com:destination-earth-digital-twins/#https://github.com/destination-earth-digital-twins/#g' pyproject.toml
 
       - name: Load cached venv (if cache exists)
         id: cached-poetry-dependencies
@@ -69,7 +69,7 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: |
           cat pyproject.toml
-          poetry install --no-interaction --no-root --extras linting
+          poetry install --no-interaction --no-root --only linting
 
       - name: Install the project itself
         run: |
