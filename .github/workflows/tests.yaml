@@ -84,6 +84,7 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: |
           cat pyproject.toml
+          git clone --recurse-submodules -- 'https://${GITHUB_TOKEN}@github.com/destination-earth-digital-twins/Deode-Workflow.git' /tmp/micromamba/envs/surfExp/src/Deode-Workflow
           poetry install --no-interaction --no-root --extras test
         shell: micromamba-shell {0}       
       
