@@ -99,6 +99,7 @@ jobs:
           poetry --version
           poetry env list
           #poetry config http-basic x-token-auth $GITHUB_TOKEN
+          poetry config system-git-client true
           poetry install -vvv --extras test
         #shell: micromamba-shell {0}       
       
