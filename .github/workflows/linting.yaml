@@ -14,6 +14,11 @@ on:
     paths:
       - '**.py'
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   linting:
     env:
