@@ -38,7 +38,7 @@ def deode_config(tmp_directory, module_initfile):
     with open(f"{tmp_directory}/mods.toml", mode="w") as fhandler:
         fhandler.write("[platform]\n")
         fhandler.write(f'scratch = "{tmp_directory}"\n')
-        fhandler.write('unix_group = "suv"\n')
+        fhandler.write('unix_group = ""\n')
         fhandler.write("[submission]\n")
         fhandler.write(f'module_initfile = "{module_initfile}"\n')
 
@@ -80,7 +80,7 @@ def default_config_file(tmp_directory, module_initfile):
         with open(f"{tmp_directory}/mods.toml", mode="w", encoding="utf8") as fhandler:
             fhandler.write("[platform]\n")
             fhandler.write(f'scratch = "{tmp_directory}"\n')
-            fhandler.write('unix_group = "suv"\n')
+            fhandler.write('unix_group = ""\n')
             fhandler.write("[submission]\n")
             fhandler.write(f'module_initfile = "{module_initfile}"\n')
         argv = [
