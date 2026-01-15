@@ -11,7 +11,7 @@ runs:
   steps:
     - name: Set github credentials
       run: |
-         cat ~/.gitconfig
+         #cat ~/.gitconfig
          git config --global url."https://${{ inputs.github_token }}@github.com/".insteadOf "https://github.com/"
          cat ~/.gitconfig
       shell: bash
