@@ -9,7 +9,7 @@
   version = "0.4.0"
   
   dependencies = [
-   "deode@git+ssh://git@github.com/destination-earth-digital-twins/Deode-Workflow.git@v0.16.1",
+   "deode@git+ssh://${GITHUB_TOKEN}@github.com/destination-earth-digital-twins/Deode-Workflow.git@v0.16.1",
    "pysurfex@git+https://github.com/metno/pysurfex.git"
   ]
 

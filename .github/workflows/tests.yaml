@@ -97,6 +97,7 @@ jobs:
           git clone --recurse-submodules -- https://${GITHUB_TOKEN}@github.com/destination-earth-digital-twins/Deode-Workflow.git Deode-Workflow-test2
           type poetry
           poetry --version
+          #poetry config http-basic x-token-auth $GITHUB_TOKEN
           poetry install --no-interaction --no-root --extras test
         #shell: micromamba-shell {0}       
       
