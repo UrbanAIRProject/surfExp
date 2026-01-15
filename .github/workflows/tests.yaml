@@ -45,15 +45,15 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - uses: mamba-org/setup-micromamba@v2
-        with:
-          #env:
-          #  GITHUB_TOKEN: ${{secrets.GH_REPO_READ_TOKEN}}
-          environment-file: environment.yml
-          init-shell: >-
-            bash
-          cache-environment: true
-          post-cleanup: 'all'
+      #- uses: mamba-org/setup-micromamba@v2
+      #  with:
+      #    #env:
+      #    #  GITHUB_TOKEN: ${{secrets.GH_REPO_READ_TOKEN}}
+      #    environment-file: environment.yml
+      #    init-shell: >-
+      #      bash
+      #    cache-environment: true
+      #    post-cleanup: 'all'
 
       #----------------------------------------------
       #  --- configure poetry & install project  ----
@@ -95,6 +95,8 @@ jobs:
         run: |
           cat pyproject.toml
           git clone --recurse-submodules -- https://${GITHUB_TOKEN}@github.com/destination-earth-digital-twins/Deode-Workflow.git Deode-Workflow-test2
+          type poetry
+          poetry --version
           poetry install --no-interaction --no-root --extras test
         #shell: micromamba-shell {0}       
       
