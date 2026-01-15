@@ -64,7 +64,7 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: |
           cat pyproject.toml
-          poetry install --no-interaction --no-root --only linting
+          poetry install --no-interaction --no-root --extras linting
 
       - name: Install the project itself
         run: |

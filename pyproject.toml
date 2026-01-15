@@ -1,15 +1,11 @@
 [project]
   name = "surfexp"
-  #dynamic = ["version"]
   description = "surfExp (DE 330)"
-  readme = "README.md"
-  requires-python = ">=3.11,<4.0"
-  # authors = ["Trygve Aspelien <trygveasp@met.no>"]
-  # description = "surfExp"
+  readme = "README.rst"
+  requires-python = ">=3.10,<3.13"
+  authors = [{name = "Trygve Aspelien"}]
   # include = [{path = "surfexp/data", format = ["sdist", "wheel"]}]
-  # name = "surfexp"
-  # license = "Apache-2.0"
-  # readme = "README.rst"
+  license = "Apache-2.0"
   version = "0.4.0"
   
   dependencies = [
@@ -25,6 +21,10 @@
   build-backend = "poetry.core.masonry.api"
   requires = ["poetry-core >= 1.2.0"]
 
+[project.optional-dependencies]
+  linting = ["black"]
+  test = ["pytest"]
+
 #[tool.poetry.dependencies]
 #  deode = {git = "git@github.com:destination-earth-digital-twins/Deode-Workflow.git", develop = false, branch = "v0.16.1"}
 #  pysurfex = {git = "https://github.com/metno/pysurfex.git", develop = false, branch = "0.1.1", extras = ["plot", "verification"]}
@@ -35,10 +35,7 @@
 #  sphinx = "^6.1.3"
 #  sphinx-rtd-theme = "^1.2.0"
 
-[project.optional-dependencies]
-linting = ["black"]
-test = ["pytest"]
-
+#[tool.poetry.group.linting.dependencies]
 #  "black = {extras = ["jupyter"], version = "^23.10.0"}
 #  isort = "^5.12.0"
 #  poethepoet = {extras = ["poetry-plugin"], version = "^0.34.0"}
