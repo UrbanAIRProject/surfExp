@@ -10,5 +10,8 @@ runs:
   using: composite
   steps:
     - name: Set github credentials
-      run: git config --global url."https://${{ inputs.github_token }}@github.com/".insteadOf "https://github.com/"
+      run: |
+         cat ~/.gitconfig
+         git config --global url."https://${{ inputs.github_token }}@github.com/".insteadOf "https://github.com/"
+         cat ~/.gitconfig
       shell: bash

@@ -77,10 +77,10 @@ jobs:
           path: .venv
           key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
 
-      #- name: Set github credentials
-      #  uses: ./.github/actions/setup-github-credentials
-      #  with:
-      #    github_token: ${{ env.GITHUB_TOKEN }}
+      - name: Set github credentials
+        uses: ./.github/actions/setup-github-credentials
+        with:
+          github_token: ${{ env.GITHUB_TOKEN }}
 
       - name: Clone repo1
         env:
@@ -100,6 +100,7 @@ jobs:
           poetry env list
           #poetry config http-basic x-token-auth $GITHUB_TOKEN
           poetry config system-git-client true
+          cat ~/.gitconfig
           poetry install -vvv --extras test
         #shell: micromamba-shell {0}       
       
