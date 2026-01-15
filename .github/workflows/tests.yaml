@@ -45,15 +45,15 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      #- uses: mamba-org/setup-micromamba@v2
-      #  with:
-      #    #env:
-      #    #  GITHUB_TOKEN: ${{secrets.GH_REPO_READ_TOKEN}}
-      #    environment-file: environment.yml
-      #    init-shell: >-
-      #      bash
-      #    cache-environment: true
-      #    post-cleanup: 'all'
+      - uses: mamba-org/setup-micromamba@v2
+        with:
+          #env:
+          #  GITHUB_TOKEN: ${{secrets.GH_REPO_READ_TOKEN}}
+          environment-file: environment.yml
+          init-shell: >-
+            bash
+          cache-environment: true
+          post-cleanup: 'all'
 
       #----------------------------------------------
       #  --- configure poetry & install project  ----
@@ -87,21 +87,17 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
         run: |
-          cat pyproject.toml
           type poetry
           poetry --version
           poetry env list
-          #poetry config http-basic x-token-auth $GITHUB_TOKEN
-          poetry config system-git-client true
           cat ~/.gitconfig
           poetry install --only main,test
-        #shell: micromamba-shell {0}       
+        shell: micromamba-shell {0}       
       
       - name: Install the project itself
         run: |
-          cat pyproject.toml 
           poetry install --no-interaction --only-root
-        #shell: micromamba-shell {0}
+        shell: micromamba-shell {0}
 
       #----------------------------------------------
       #      run test suite and report coverage
@@ -109,6 +105,6 @@ jobs:
       - name: Run tests
         run: |
           poetry run pytest
-        #shell: micromamba-shell {0}
+        shell: micromamba-shell {0}
 
 
