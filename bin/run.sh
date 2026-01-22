@@ -1,8 +1,8 @@
 #!/bin/bash
 
-if [ $# -ne 3 -a $# -ne 5 -a $# -ne 6 ]; then
-  echo "Usage: $0 host-file plugin_home micromamba_env_name [prep iso-date [iso-end-date]]"
-  echo "$0 $PWD/envs/ATOS-Bologna $PWD `basename $PWD` false 2025-01-01T00:00:00Z 2025-01-02T00:00:00Z"
+if [ $# -ne 2 -a $# -ne 4 -a $# -ne 5 ]; then
+  echo "Usage: $0 host-file plugin_home [prep iso-date [iso-end-date]]"
+  echo "$0 $PWD/envs/ATOS-Bologna $PWD false 2025-01-01T00:00:00Z 2025-01-02T00:00:00Z"
   exit 1
 else
   echo
@@ -16,18 +16,17 @@ else
   . $host_file
 
   plugin_home=$2
-  micromamba_env_name=$3
   do_prep="false"
-  [ $# -gt 3 ] && do_prep="$4"
-  if [ $# -gt 4 ]; then
-    start_time=$5
+  [ $# -gt 2 ] && do_prep="$3"
+  if [ $# -gt 3 ]; then
+    start_time=$4
   else
     start_time=`date -d "today" '+%Y-%m-%d'`"T00:00:00Z"
     [ "$USER" == "sbu" ] && start_time=`date -d "2 day ago" '+%Y-%m-%d'`"T00:00:00Z"
   fi
   end_time=$start_time
-  if [ $# -gt 5 ]; then
-    end_time=$6
+  if [ $# -gt 4 ]; then
+    end_time=$5
   fi
 fi
 
@@ -39,7 +38,9 @@ exp="CY49DT_OFFLINE_dt_2_5_2500x2500"
 [ "$ecf_dir" == "" ] && echo "ecf_dir not set!" && exit 1
 [ "$binaries_opt" == "" ] && echo "binaries_opt not set!" && exit 1
 [ "$binaries_de" == "" ] && echo "binaries_de not set!" && exit 1
-[ "$micromamba_path" == "" ] && echo "micromamba_path not set!" && exit 1
+[ "${micromamba_path}" == "" ] && echo "micromamba_path not set" && exit 1
+[ -! -d ${micromamba_path}/bin/ ] && echo "${micromamba_path}/bin/ does not exist!" && exit 1
+export PATH=${micromamba_path}/bin/:$PATH
 
 # Experiment specific
 config="dt_offline_dt_2_5_2500x2500_running.toml"
@@ -53,12 +54,6 @@ if [ "$USER" == "sbu" ]; then
   domain_name="DRAMMEN"
   exp="CY49DT_OFFLINE_dt_2_5_50x60"
 fi
-# Micromamba
-export PATH=${micromamba_path}/bin/:$PATH
-export MAMBA_ROOT_PREFIX=${micromamba_path}  # optional, defaults to ~/micromamba
-eval "$(micromamba shell hook -s posix)"
-
-micromamba activate $micromamba_env_name || exit 1
 
 set -x
 cd $plugin_home
@@ -137,7 +132,7 @@ cat > $mods << EOF
 
 EOF
 
-time surfExp -o $config \
+time poetry run surfExp -o $config \
 --case-name $exp \
 --plugin-home $plugin_home  \
 --troika troika \
@@ -149,5 +144,5 @@ $mods \
 --start-time $start_time \
 --end-time $end_time
 
-time deode start suite --config-file $config || exit 1
+time poetry deode start suite --config-file $config || exit 1
 

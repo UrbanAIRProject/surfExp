@@ -33,16 +33,15 @@ Now it is easy to create a suitable environment for surfExp. Below is a recipie 
     # initialize your shell (needed in all shells), e.g:
     eval "$(micromamba shell hook --shell bash)"
 
-    micromamba create env surfExp
-    micromamba activate surfExp
-    micromamba install python==3.10 poetry gdal ecflow
+    micromamba create env -p /path/to/your/micro/mamba/env python==3.11 poetry gdal ecflow
+    export PATH=/path/to/your/micro/mamba/env/bin:$PATH
 
-Now you have installed a suitable environment. To install surfExp the recommended installation method is using poetry which we just instlled in the environment.
+Now you have installed a suitable environment. To install surfExp the recommended installation method is using poetry which we just installed in the environment. Instead of activating the envronment we only added it to out path so that poetry and needed system libraries will be used from it.
 
 To install the script system first clone https://github.com/metno/surfExp and install it with poetry.
 
 NB: Poetry is also an environment manager. If not installed in a conda environment,
-you will need to run either "poetry shell" or "poetry run [cmd]" to execute commands in this environment.
+you will need to run either "`poetry env activate`" or "poetry run [cmd]" to execute commands in this environment.
 
 
 .. code-block:: bash
@@ -54,11 +53,8 @@ you will need to run either "poetry shell" or "poetry run [cmd]" to execute comm
  # Clone the source code
  clone https://github.com/metno/surfExp
 
- # initialize your shell (needed in all shells), e.g:
- eval "$(micromamba shell hook --shell bash)"
-
- # activate the environment
- micromamba activate surfExp
+ # If not already done, set the path
+ export PATH=/path/to/your/micro/mamba/env/bin:$PATH
 
  # Install the script system
  cd surfExp
@@ -97,20 +93,17 @@ from the config file.
  # First make sure you are in the proper environment
  cd ~/projects/surfExp
 
- # initialize your shell (needed in all shells), e.g:
- eval "$(micromamba shell hook --shell bash)"
-
- # Activate the environment
- micromamba activate surfExp
+ # If not already done, set the path
+ export PATH=/path/to/your/micro/mamba/env/bin:$PATH
 
  # Alternative way of setting up a pre-defined SEKF configuration
- surfExp -o my_config.toml --case-name SEKF --plugin-home $PWD surfexp/data/config/configurations/sekf.toml
+ poetry run surfExp -o my_config.toml --case-name SEKF --plugin-home $PWD surfexp/data/config/configurations/sekf.toml
 
  # Use AROME Arctic branch on PPI together with MET-Norway LDAS
- surfExp -o my_config.toml --case-name LDAS --plugin-home $PWD surfexp/data/config/configurations/metno_ldas.toml surfexp/data/config/mods/cy46_aa_offline/ppi.toml
+ poetry run surfExp -o my_config.toml --case-name LDAS --plugin-home $PWD surfexp/data/config/configurations/metno_ldas.toml surfexp/data/config/mods/cy46_aa_offline/ppi.toml
 
  # To start you experiment
- deode start suite --config-file my_config.toml
+ poetry run deode start suite --config-file my_config.toml
 
 
 
@@ -125,14 +118,12 @@ Extra environment on PPI-RHEL8 needed to start experiments
  # Get surfExp
  git clone github.com:trygveasp/surfExp.git  --branch feature/deode_offline_surfex surfExp_new_pysurfex
 
- # conda setup
- source /modules/rhel8/user-apps/suv-modules/miniconda3/24.7.1/etc/profile.d/conda.sh
- conda create -n surfExp python==3.10 -y
- conda install -c conda-forge -n surfExp poetry gdal -y
- conda activate surfExp
+ # Set path to conda environment
 
  # Install
  poetry install
+
+ `poetry env activate`
 
  surfExp -o offline_drammen_metno_ldas.toml \
  --case-name METNO_LDAS \
