@@ -13,6 +13,17 @@ See online documentation in https://metno.github.io/surfExp/
 The setup is dependent of pysurfex (https://metno.github.io/pysurfex) and deode workflow (https://github.com/destination-earth-digital-twins/Deode-Workflow).
 
 
+Update the daily runs in DEODE
+-----------------------------------
+
+First create a new tag with a suitable name (e.g. surfExp version). This can be done with git commands or directly from https://github.com/destination-earth-digital-twins/surfExp
+
+The tagging of surfExp will automatically create an installation under /perm/aut6432/DE_surfExp/tag-name/surfExp of the deode_production branch. The installation is local to this experiment. The control suite is not automatically updated and will continue to access the previous experiment, until the run_cmd is changed. This can be achieved by changing this variable directly in ecflow_ui or running the ./bin/control.sh script from the new experiment [recommended].
+
+.. code-block:: bash
+ cd /perm/aut6432/DE_surfExp/tag-name/surfExp
+ ./bin/control.sh $PWD/envs/ATOS-Bologna $PWD"
+
 
 Installation
 -------------
