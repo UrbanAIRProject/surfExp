@@ -13,7 +13,7 @@ fi
 . $host_file
 
 [ "${micromamba_path}" == "" ] && echo "micromamba_path not set" && exit 1
-[ -! -d ${micromamba_path}/bin/ ] && echo "${micromamba_path}/bin/ does not exist!" && exit 1
+[ ! -d ${micromamba_path}/bin/ ] && echo "${micromamba_path}/bin/ does not exist!" && exit 1
 export PATH=${micromamba_path}/bin/:$PATH
 cd $plugin_home
 poetry install || exit 1

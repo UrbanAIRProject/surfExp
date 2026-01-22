@@ -27,7 +27,7 @@ exp="CY49DT_OFFLINE_dt_2_5_2500x2500_control"
 [ "$binaries_opt" == "" ] && echo "binaries_opt not set!" && exit 1
 [ "$binaries_de" == "" ] && echo "binaries_de not set!" && exit 1
 [ "${micromamba_path}" == "" ] && echo "micromamba_path not set" && exit 1
-[ -! -d ${micromamba_path}/bin/ ] && echo "${micromamba_path}/bin/ does not exist!" && exit 1
+[ ! -d ${micromamba_path}/bin/ ] && echo "${micromamba_path}/bin/ does not exist!" && exit 1
 export PATH=${micromamba_path}/bin/:$PATH
 
 # Experiment specific
