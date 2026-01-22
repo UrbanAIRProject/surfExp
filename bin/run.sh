@@ -144,5 +144,5 @@ $mods \
 --start-time $start_time \
 --end-time $end_time
 
-time poetry deode start suite --config-file $config || exit 1
+time poetry run deode start suite --config-file $config || exit 1
 
