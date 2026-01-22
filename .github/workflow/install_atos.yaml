@@ -44,6 +44,7 @@ jobs:
 
           # Sanity checks
           [ -d $install_dir ] && echo "$install_dir already exists!" && exit 1
+          cd $install_dir || exit 1
 
           echo "Cloning surfExp (branch: $branch) into $install_dir"
           git clone --depth 1 --branch $branch git@github.com:destination-earth-digital-twins/surfExp.git || exit 1
