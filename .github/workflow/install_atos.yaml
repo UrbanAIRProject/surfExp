@@ -1,0 +1,73 @@
+
+name: Install surfExp on ATOS
+
+on:
+  push:
+    tags:
+      - '*'
+  workflow_call:
+    secrets:
+      HPC_CI_SSH_USER:
+        required: true
+      GH_REPO_READ_TOKEN:
+        required: true
+jobs:
+    install:
+      name: "Install surfExp"
+      runs-on: [hpc]
+      steps:
+      - name: Check out the repository to the runner
+        uses: actions/checkout@v3
+
+      - name: Install on aut6432
+        run: |
+          echo "ID"
+          id
+          pwd
+          ls -lR
+          echo "${{ secrets.AUT6432_SSH }}" > ssh_key
+          chmod 600 ssh_key
+
+          install_dir="/perm/aut6432/DE_surfExp/$GITHUB_REF_NAME"
+          branch="deode_production"
+          echo "install_dir: $install_dir"
+          echo "branch $branch"
+
+          # SSH login to aut6432 and create directories
+          ssh -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            -i ssh_key \
+            -X aut6432@hpc-login << EOF
+
+          echo "Logged in as $USER"
+          echo "Cloning $branch in $install_dir"
+
+          # Sanity checks
+          [ -d $install_dir ] && echo "$install_dir already exists!" && exit 1
+
+          echo "Cloning surfExp (branch: $branch) into $install_dir"
+          git clone --depth 1 --branch $branch git@github.com:destination-earth-digital-twins/surfExp.git || exit 1
+          EOF
+
+          # SSH login to aut6432 and create directories
+          ssh -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            -i ssh_key \
+            -X aut6432@hpc-login << EOF
+
+          echo "Logged in as $USER"
+          echo "Installing surfExp in $install_dir/surfExp"
+          cd $install_dir/surfExp || exit 1
+
+          ./bin/install.sh $PWD/envs/ATOS-Bologna $PWD  || exit 1
+          EOF
+
+    
+    remove_ssh_key:
+      name: "Remove SSH key"
+      runs-on: ubuntu-latest
+      needs: [install]
+      steps:
+      - name: Remove SSH key file
+        run: |
+          rm -f ssh_key
