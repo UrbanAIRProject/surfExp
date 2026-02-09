@@ -22,6 +22,8 @@ jobs:
   tests:
     env:
       GITHUB_TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
+    name: "Unit testing for DEODE surfExp"
+    runs-on: "ubuntu-latest"
 
     steps:
       #----------------------------------------------

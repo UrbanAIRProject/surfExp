@@ -23,7 +23,7 @@ jobs:
   linting:
     env:
       GITHUB_TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
-    name: Run Linters
+    name: Run Linters for surfExp
     runs-on: ubuntu-latest
     environment: staging
     steps:
