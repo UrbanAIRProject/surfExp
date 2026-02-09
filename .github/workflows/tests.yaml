@@ -62,7 +62,7 @@ jobs:
       - name: Install DEODE surfExp
         run: |
           echo micromamba_path="/tmp/micromamba/envs/surfExp/" > envs/github_env
-          ./bin/install.sh github_env $PWD
+          ./bin/install.sh $PWD/envs/github_env $PWD
       
       #----------------------------------------------
       #      run test suite and report coverage
