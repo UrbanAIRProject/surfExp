@@ -22,21 +22,6 @@ jobs:
   tests:
     env:
       GITHUB_TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
-    if: github.repository_owner == 'destination-earth-digital-twins'
-    strategy:
-      fail-fast: true
-      matrix:
-        os: [ "ubuntu-latest" ]
-        env: [ "pytest" ]
-        python-version: [ "3.11" ]
-
-    name: "${{ matrix.os }}, python=${{ matrix.python-version }}"
-    runs-on: ${{ matrix.os }}
-
-    container:
-      image: python:${{ matrix.python-version }}-bullseye
-      env:
-        COVERAGE_FILE: ".coverage.${{ matrix.env }}.${{ matrix.python-version }}"
 
     steps:
       #----------------------------------------------
@@ -47,22 +32,19 @@ jobs:
 
       - uses: mamba-org/setup-micromamba@v2
         with:
-          #env:
-          #  GITHUB_TOKEN: ${{secrets.GH_REPO_READ_TOKEN}}
           environment-file: environment.yml
           init-shell: >-
             bash
           cache-environment: true
           post-cleanup: 'all'
 
-      #----------------------------------------------
-      #  --- configure poetry & install project  ----
-      #----------------------------------------------
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
+      - name: Set PATH
+        run: |
+          echo "/tmp/micromamba/envs/surfExp/bin" >> $GITHUB_PATH
+
+      - name: Set python
+        run: |
+          poetry env use /tmp/micromamba/envs/surfExp/bin/python
 
       - name: Modify pyproject.toml
         env:
@@ -70,41 +52,19 @@ jobs:
         run: |
           sed -i 's#git@github.com:destination-earth-digital-twins/#https://github.com/destination-earth-digital-twins/#g' pyproject.toml
 
-      - name: Load cached venv (if cache exists)
-        id: cached-poetry-dependencies
-        uses: actions/cache@v5
-        with:
-          path: .venv
-          key: ${{ github.job }}-venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml', 'poetry.toml') }}
-
       - name: Set github credentials
         uses: ./.github/actions/setup-github-credentials
         with:
           github_token: ${{ env.GITHUB_TOKEN }}
 
-      - name: Install dependencies (if venv cache is not found)
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
+      - name: Install DEODE surfExp
         run: |
-          type poetry
-          poetry --version
-          poetry env list
-          cat ~/.gitconfig
-          poetry install --only main,test
-        shell: micromamba-shell {0}       
+          echo micromamba_path="/tmp/micromamba/envs/surfExp/" > envs/github_env
+          ./bin/install.sh github_env
       
-      - name: Install the project itself
-        run: |
-          poetry install --no-interaction --only-root
-        shell: micromamba-shell {0}
-
       #----------------------------------------------
       #      run test suite and report coverage
       #----------------------------------------------
       - name: Run tests
         run: |
           poetry run pytest
-        shell: micromamba-shell {0}
-
-

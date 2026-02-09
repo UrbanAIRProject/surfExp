@@ -1,8 +1,8 @@
 #!/bin/bash
 
-if [ $# -ne 3 ]; then
-  echo "Usage: $0 host-file plugin_home micromamba_env_name"
-  echo "$0 $PWD/envs/ATOS-Bologna $PWD `basename $PWD`"
+if [ $# -ne 2 ]; then
+  echo "Usage: $0 host-file plugin_home"
+  echo "$0 $PWD/envs/ATOS-Bologna $PWD"
   exit 1
 else
   echo
@@ -16,7 +16,6 @@ else
   . $host_file
 
   plugin_home=$2
-  micromamba_env_name=$3
 fi
 
 # Experiment
@@ -27,7 +26,9 @@ exp="CY49DT_OFFLINE_dt_2_5_2500x2500_control"
 [ "$ecf_dir" == "" ] && echo "ecf_dir not set!" && exit 1
 [ "$binaries_opt" == "" ] && echo "binaries_opt not set!" && exit 1
 [ "$binaries_de" == "" ] && echo "binaries_de not set!" && exit 1
-[ "$micromamba_path" == "" ] && echo "micromamba_path not set!" && exit 1
+[ "${micromamba_path}" == "" ] && echo "micromamba_path not set" && exit 1
+[ ! -d ${micromamba_path}/bin/ ] && echo "${micromamba_path}/bin/ does not exist!" && exit 1
+export PATH=${micromamba_path}/bin/:$PATH
 
 # Experiment specific
 config="dt_offline_dt_2_5_2500x2500_control.toml"
@@ -40,13 +41,6 @@ if [ "$USER" == "sbu" ]; then
   domain_name="DRAMMEN"
   exp="CY49DT_OFFLINE_dt_2_5_50x60_control"
 fi
-
-# Micromamba
-export PATH=${micromamba_path}/bin/:$PATH
-export MAMBA_ROOT_PREFIX=${micromamba_path}  # optional, defaults to ~/micromamba
-eval "$(micromamba shell hook -s posix)"
-
-micromamba activate $micromamba_env_name || exit 1
 
 cd $plugin_home
 echo $PATH
@@ -62,7 +56,7 @@ cat > $mods << EOF
   ecf_out = "$ecf_dir/jobout"
 
 [suite_control]
-  run_cmd = "$plugin_home/bin/run.sh $host_file $plugin_home $micromamba_env_name"
+  run_cmd = "$plugin_home/bin/run.sh $host_file $plugin_home"
 
 [system]
    casedir = "$scratch/surfexp/@CASE@"
@@ -72,7 +66,7 @@ cat > $mods << EOF
 
 EOF
 
-time surfExp -o $config \
+time poetry run surfExp -o $config \
 --case-name $exp \
 --plugin-home $plugin_home  \
 --troika troika \
@@ -82,5 +76,5 @@ surfexp/data/config/domains/dt_2_5_2500x2500.toml \
 surfexp/data/config/mods/dev-CY49T2h_deode/dt.toml \
 $mods
 
-time deode start suite --config-file $config || exit 1
+time poetry run deode start suite --config-file $config || exit 1
 
