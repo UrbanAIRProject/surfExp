@@ -63,10 +63,17 @@ jobs:
         run: |
           echo micromamba_path="/tmp/micromamba/envs/surfExp/" > envs/github_env
           ./bin/install.sh $PWD/envs/github_env $PWD
-      
+
       #----------------------------------------------
       #      run test suite and report coverage
       #----------------------------------------------
       - name: Run tests
         run: |
+          ls -l .venv
+          ls -l .venv/lib/
+          ls -l .venv/lib/python3.11/
+          ls -l .venv/lib/python3.11/site-packages
+          ls -l .venv/lib/python3.11/site-packages/eccodeslib
+          ls -l .venv/lib/python3.11/site-packages/eccodeslib/lib64
+          ls -l .venv/lib/python3.11/site-packages/eccodeslib/lib64/libaec.so.0.1.3
           poetry run pytest
