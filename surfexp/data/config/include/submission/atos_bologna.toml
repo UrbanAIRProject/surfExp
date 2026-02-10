@@ -84,7 +84,7 @@
   #  MEM = "#SBATCH --mem=200GB"
   NODES = "#SBATCH --nodes=1"
   NTASKS = "#SBATCH --ntasks=32"
-  WALLTIME = "#SBATCH --time=02:00:00"
+  WALLTIME = "#SBATCH --time=03:00:00"
 
 [submission.task_exceptions.OfflinePgd]
   NTASKS = "#SBATCH --ntasks=6"
