@@ -28,7 +28,9 @@ jobs:
           echo "${{ secrets.AUT6432_SSH }}" > ssh_key
           chmod 600 ssh_key
 
-          install_dir="/perm/aut6432/DE_surfExp/$GITHUB_REF_NAME"
+          # Replace dots by undercores in tag name
+          tag_name=`echo $GITHUB_REF_NAME | sed -e s#\\.#_#g`
+          install_dir="/perm/aut6432/DE_surfExp/$tag_name"
           branch="deode_production"
           echo "install_dir: $install_dir"
           echo "branch $branch"
