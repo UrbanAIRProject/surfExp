@@ -9,16 +9,14 @@ on:
         type: string
         required: true
 
-  workflow_call:
-    secrets:
-      HPC_CI_SSH_USER:
-        required: true
-      GH_REPO_READ_TOKEN:
-        required: true
+  #workflow_call:
+  #  secrets:
+  #    HPC_CI_SSH_USER:
+  #      required: true
+  #    GH_REPO_READ_TOKEN:
+  #      required: true
 jobs:
     install:
-      env:
-        GITHUB_BRANCH: ${{ github.ref_name }}
       name: "Install surfExp"
       runs-on: [hpc]
       steps:
@@ -26,6 +24,8 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install on aut6432
+        env:
+          TAG_NAME: ${{ inputs.tag_name }}
         run: |
           echo "ID"
           id
@@ -34,11 +34,10 @@ jobs:
           echo "${{ secrets.AUT6432_SSH }}" > ssh_key
           chmod 600 ssh_key
 
-          tag_name=${{ inputs.tag_name }}
           #branch=deode_production
           # TEST
           branch=deode_master
-          install_dir="/perm/aut6432/DE_surfExp/$tag_name"
+          install_dir="/perm/aut6432/DE_surfExp/$TAG_NAME"
           echo "install_dir: $install_dir"
           echo "branch $branch"
 
