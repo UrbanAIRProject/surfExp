@@ -108,4 +108,3 @@ $mods \
 --end-time $end_time
 
 time poetry run deode start suite --config-file $config || exit 1
-

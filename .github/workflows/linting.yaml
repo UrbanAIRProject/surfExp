@@ -14,6 +14,10 @@ on:
     paths:
       - '**.py'
 
+env:
+  USER: "github_runner"
+  HOME: "/tmp"
+
 permissions:
   contents: read
   pages: write
