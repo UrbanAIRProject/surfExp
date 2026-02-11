@@ -303,7 +303,7 @@ class QualityControl(PySurfexBaseTask):
             fcint = as_timedelta(f"{fcint}")
         except KeyError:
             self.offset = 0
-            fcint = as_timedelta(f"PT0H")
+            fcint = as_timedelta("PT0H")
 
         self.validtime = self.basetime - fcint + as_timedelta(f"{self.offset:02d}:00:00")
 
@@ -571,8 +571,8 @@ class OptimalInterpolation(PySurfexBaseTask):
             fcint = as_timedelta(f"{fcint}")
         except KeyError:
             self.offset = 0
-            fcint = as_timedelta(f"PT0H")
-        self.validtime = self.basetime -fcint + as_timedelta(f"{self.offset:02d}:00:00")
+            fcint = as_timedelta("PT0H")
+        self.validtime = self.basetime - fcint + as_timedelta(f"{self.offset:02d}:00:00")
 
     def execute(self):
         """Execute."""

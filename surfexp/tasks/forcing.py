@@ -251,7 +251,8 @@ class Interpolate2grid(PySurfexBaseTask):
                     self.basetime.strftime("%Y%m%d%H"),
                     "--validtime",
                     validtime,
-                    "--fcint", "86400",
+                    "--fcint",
+                    "86400",
                 ]
                 logger.info("converter2ds {}", " ".join(argv))
                 converter2ds(argv=argv)

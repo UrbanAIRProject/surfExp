@@ -1,0 +1,72 @@
+#.github/workflows/tests.yaml
+name: Unit Tests
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - '**' # Every branch
+
+env:
+  USER: "github_runner"
+  HOME: "/tmp"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  tests:
+    env:
+      GITHUB_TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
+    name: "Unit testing for DEODE surfExp"
+    runs-on: "ubuntu-latest"
+
+    steps:
+      #----------------------------------------------
+      #           check-out repo
+      #----------------------------------------------
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-file: environment.yml
+          init-shell: >-
+            bash
+          cache-environment: true
+          post-cleanup: 'all'
+
+      - name: Set PATH
+        run: |
+          echo "/tmp/micromamba/envs/surfExp/bin" >> $GITHUB_PATH
+
+      - name: Set python
+        run: |
+          poetry env use /tmp/micromamba/envs/surfExp/bin/python
+
+      - name: Modify pyproject.toml
+        env:
+          GITHUB_TOKEN: ${{secrets.GH_REPO_READ_TOKEN}}
+        run: |
+          sed -i 's#git@github.com:destination-earth-digital-twins/#https://github.com/destination-earth-digital-twins/#g' pyproject.toml
+
+      - name: Set github credentials
+        uses: ./.github/actions/setup-github-credentials
+        with:
+          github_token: ${{ env.GITHUB_TOKEN }}
+
+      - name: Install DEODE surfExp
+        run: |
+          echo micromamba_path="/tmp/micromamba/envs/surfExp/" > envs/github_env
+          ./bin/install.sh $PWD/envs/github_env $PWD
+
+      #----------------------------------------------
+      #      run test suite and report coverage
+      #----------------------------------------------
+      - name: Run tests
+        run: |
+          poetry run pytest
