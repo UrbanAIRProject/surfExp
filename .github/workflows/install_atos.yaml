@@ -34,9 +34,7 @@ jobs:
           echo "${{ secrets.AUT6432_SSH }}" > ssh_key
           chmod 600 ssh_key
 
-          #branch=deode_production
-          # TEST
-          branch=deode_master
+          branch=deode_production
           install_dir="/perm/aut6432/DE_surfExp/$TAG_NAME"
           echo "install_dir: $install_dir"
           echo "branch $branch"
