@@ -17,9 +17,9 @@
 
 [tool.poetry.dependencies]
   deode = {git = "git@github.com:destination-earth-digital-twins/Deode-Workflow.git", develop = false, branch = "v0.16.1"}
+  eccodeslib = "^2.42"
   pysurfex = {git = "https://github.com/metno/pysurfex.git", develop = false, branch = "0.1.1", extras = ["plot", "verification"]}
   python = ">=3.10,<3.13"
-  eccodeslib = "^2.42"
 
 [tool.poetry.group.doc.dependencies]
   coveralls = "^3.3.1"
