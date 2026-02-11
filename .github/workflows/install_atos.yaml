@@ -9,12 +9,12 @@ on:
         type: string
         required: true
 
-  #workflow_call:
-  #  secrets:
-  #    HPC_CI_SSH_USER:
-  #      required: true
-  #    GH_REPO_READ_TOKEN:
-  #      required: true
+  workflow_call:
+    secrets:
+      HPC_CI_SSH_USER:
+        required: true
+      GH_REPO_READ_TOKEN:
+        required: true
 jobs:
     install:
       name: "Install surfExp"
@@ -34,9 +34,7 @@ jobs:
           echo "${{ secrets.AUT6432_SSH }}" > ssh_key
           chmod 600 ssh_key
 
-          #branch=deode_production
-          # TEST
-          branch=deode_master
+          branch=deode_production
           install_dir="/perm/aut6432/DE_surfExp/$TAG_NAME"
           echo "install_dir: $install_dir"
           echo "branch $branch"
@@ -69,7 +67,7 @@ jobs:
           echo "Installing surfExp in $install_dir/surfExp"
           cd $install_dir/surfExp || exit 1
 
-          #./bin/install.sh $PWD/envs/ATOS-Bologna $PWD  || exit 1
+          ./bin/install.sh $install_dir/surfExp/envs/ATOS-Bologna $install_dir/surfExp  || exit 1
           EOF
 
     
