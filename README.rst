@@ -1,9 +1,5 @@
 .. _README:
 
-.. image:: https://coveralls.io/repos/github/metno/surfExp/badge.svg?branch=master
-
-https://coveralls.io/github/metno/surfExp
-
 
 This repository is a setup to create and run offline SURFEX experiments.
 =========================================================================
@@ -13,14 +9,15 @@ See online documentation in https://metno.github.io/surfExp/
 The setup is dependent of pysurfex (https://metno.github.io/pysurfex) and deode workflow (https://github.com/destination-earth-digital-twins/Deode-Workflow).
 
 
-
 Installation
 -------------
 
-An environment manager like miniconda or micromamba is recommended to ensure consistency between the packages.
-After installing this you need to set it up for the current session or permanently add it to your shell.
-Now it is easy to create a suitable environment for surfExp. Below is a recipie for micromamba.
+An environment manager like miniforge or micromamba is recommended to ensure consistency between the packages.
 
+On ECMWF-ATOS you can use the existing micromamba environment installed under the operational account.
+
+Below is a recipie for micromamba if you need to install it (NB! Not needed on ECMWF-ATOS). After installing this you need to set it up for the current session or permanently add it to your shell.
+Now it is easy to create a suitable environment for surfExp. 
 
 .. code-block:: bash
 
@@ -33,35 +30,40 @@ Now it is easy to create a suitable environment for surfExp. Below is a recipie 
     # initialize your shell (needed in all shells), e.g:
     eval "$(micromamba shell hook --shell bash)"
 
-    micromamba create env surfExp
-    micromamba activate surfExp
-    micromamba install python==3.10 poetry gdal ecflow
+    # Install the surfExp depencies in a micromamba environment
+    micromamba create env -p /path/to/micromamba-installation/envs/env-name --file environment.yml
 
-Now you have installed a suitable environment. To install surfExp the recommended installation method is using poetry which we just instlled in the environment.
 
-To install the script system first clone https://github.com/metno/surfExp and install it with poetry.
+Now you have installed a suitable environment. To install surfExp the recommended installation method is using poetry which we just installed in the environment.
 
-NB: Poetry is also an environment manager. If not installed in a conda environment,
-you will need to run either "poetry shell" or "poetry run [cmd]" to execute commands in this environment.
-
+To install the script system first clone https://github.com/destination-earth-digital-twins/surfExp and install it with poetry. There is a help script for this (./bin/install.sh) called which can be executed:
 
 .. code-block:: bash
 
- cd
- mkdir -p projects
- cd projects
+ # On ECMWF ATOS
+ mkdir -p /perm/$USER/DE_surfExp/
 
  # Clone the source code
- clone https://github.com/metno/surfExp
+ git clone https://github.com/destination-earth-digital-twins/surfExp my_exp
 
- # initialize your shell (needed in all shells), e.g:
- eval "$(micromamba shell hook --shell bash)"
+ cd my_exp
 
- # activate the environment
- micromamba activate surfExp
+ # Install in experiment
+ ./bin/install.sh $PWD/envs/ATOS-Bologna $PWD
 
- # Install the script system
- cd surfExp
+
+To install in a custom location (not using support scripts and no defined platform) use the local micromamba environment like this
+
+.. code-block:: bash
+
+ # Clone the source code
+ git clone https://github.com/destination-earth-digital-twins/surfExp my_exp
+
+ cd my_exp
+
+ # Set path to environment
+ export PATH=/path/to/micromamba-installation/envs/env-name/bin:$PATH
+ 
  poetry install
 
 
@@ -95,89 +97,51 @@ from the config file.
 .. code-block:: bash
 
  # First make sure you are in the proper environment
- cd ~/projects/surfExp
+ cd /perm/$USER/DE_surfExp/my_exp
 
- # initialize your shell (needed in all shells), e.g:
- eval "$(micromamba shell hook --shell bash)"
+ # Set your PATH based on system micromamba installation
+ . $PWD/envs/ATOS-Bologna
+ export PATH=$micromamba_path/bin:$PATH
 
- # Activate the environment
- micromamba activate surfExp
-
- # Alternative way of setting up a pre-defined SEKF configuration
- surfExp -o my_config.toml --case-name SEKF --plugin-home $PWD surfexp/data/config/configurations/sekf.toml
-
- # Use AROME Arctic branch on PPI together with MET-Norway LDAS
- surfExp -o my_config.toml --case-name LDAS --plugin-home $PWD surfexp/data/config/configurations/metno_ldas.toml surfexp/data/config/mods/cy46_aa_offline/ppi.toml
+ # Set up an experiment (Pan-European domain, PREP from namelist values, CY49)
+ poetry run surfExp -o my_config.toml \
+ --case-name MY_CASE \
+ --plugin-home $PWD \
+ --troika troika  \
+ surfexp/data/config/configurations/dt.toml \
+ surfexp/data/config/domains/dt_2_5_2500x2500.toml \
+ surfexp/data/config/mods/dev-CY49T2h_deode/dt.toml \
+ surfexp/data/config/mods/dev-CY49T2h_deode/dt_prep_from_namelist.toml \
+ --start-time 2025-01-01T00:00:00Z \
+ --end-time 2025-01-03T00:00:00Z
 
  # To start you experiment
  deode start suite --config-file my_config.toml
 
-
-
-Extra environment on PPI-RHEL8 needed to start experiments
----------------------------------------------------------------
+For easier usage, there exist some help scripts for usage for a given HOST environment.
 
 .. code-block:: bash
+ 
+ # Run poetry in proper environment on ATOS
+ ./bin/atos_poetry.sh
 
- # use ib-dev queue
- ssh ppi-r8login-b1.int.met.no
+ # Print virtual environment
+ ./bin/env.sh
 
- # Get surfExp
- git clone github.com:trygveasp/surfExp.git  --branch feature/deode_offline_surfex surfExp_new_pysurfex
+ # Installs locally
+ ./bin/install.sh
 
- # conda setup
- source /modules/rhel8/user-apps/suv-modules/miniconda3/24.7.1/etc/profile.d/conda.sh
- conda create -n surfExp python==3.10 -y
- conda install -c conda-forge -n surfExp poetry gdal -y
- conda activate surfExp
+ # Create climate files only
+ ./bin/climate.sh
 
- # Install
- poetry install
+ # Compile (normally not done, using DEODE binaries)
+ ./bin/compile.sh
 
- surfExp -o offline_drammen_metno_ldas.toml \
- --case-name METNO_LDAS \
- --plugin-home /home/$USER/projects/surfExp \
- surfexp/data/config/configurations/metno_ldas.toml \
- surfexp/data/config/domains/DRAMMEN.toml \
- surfexp/data/config/scheduler/ecflow_ppi_rhel8-trygveasp.toml \
- surfexp/data/config/mods/cy46_aa_offline/ppi.toml \
- surfexp/data/config/mods/cy46_aa_offline/isba_dif_snow_ass_decade_dirtyp.toml \
- --start-time 2025-04-17T03:00:00Z \
- --end-time 2025-04-17T07:00:00Z \
- --continue
+ # Set up control suite for dailly runs. Specifies run command
+ ./bin/control.sh
 
- # MET-Norway LDAS experiment (using netcdf input to PGD)
- mkdir -f exps
- surfExp -o exps/LDAS.toml \
- --case-name LDAS \
- --plugin-home $PWD \
- surfexp/data/config/configurations/metno_ldas.toml \
- surfexp/data/config/domains/MET_NORDIC_1_0.toml \
- surfexp/data/config/mods/cy46_aa_offline/ppi.toml \
- surfexp/data/config/mods/netcdf_input_pgd.toml \
- surfexp/pdata/config/scheduler/ecflow_ppi_rhel8-$USER.toml
+ # Run dailly run
+ ./bin/run.sh
 
- # PPI ECFLOW
- # If your server is not running you should start it!
- module use /modules/MET/rhel8/user-modules/
- module load ecflow/5.8.1
- export ECF_SSL=1
-
- # Set HOST
- export DEODE_HOST="ppi_rhel8_b1"
-
- # Start suite (modify dates)
- deode start suite --config-file exps/LDAS.toml
-
- # MET-Norway LDAS single decade
- surfExp -o exps/LDAS_decade.toml --case-name LDAS_decade \
- --plugin-home $PWD \
- surfexp/data/config/configurations/metno_ldas.toml \
- surfexp/data/config/domains/MET_NORDIC_1_0.toml \
- surfexp/data/config/mods/cy46_aa_offline/ppi.toml \
- surfexp/data/config/mods/cy46_aa_offline/isba_dif_snow_ass_decade_dirtyp.toml \
- surfexp/data/config/scheduler/ecflow_ppi_rhel8-$USER.toml
-
- # Start the suite
- deode start suite  --config-file exps/LDAS_decade.toml
-
+ # Run experiment with DT
+ ./bin/run_exp_dt.sh

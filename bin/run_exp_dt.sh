@@ -1,8 +1,8 @@
 #!/bin/bash
 
-if [ $# -ne 2 ]; then
-  echo "Usage: $0 host-file plugin_home"
-  echo "$0 $PWD/envs/ATOS-Bologna $PWD"
+if [ $# -ne 2 -a $# -ne 4 -a $# -ne 5 ]; then
+  echo "Usage: $0 host-file plugin_home [prep iso-date [iso-end-date]]"
+  echo "$0 $PWD/envs/ATOS-Bologna $PWD true 2025-01-01T00:00:00Z 2025-01-02T00:00:00Z"
   exit 1
 else
   echo
@@ -16,10 +16,21 @@ else
   . $host_file
 
   plugin_home=$2
+  do_prep="true"
+  [ $# -gt 2 ] && do_prep="$3"
+  if [ $# -gt 3 ]; then
+    start_time=$4
+  else
+    start_time=`date -d "today" '+%Y-%m-%d'`"T00:00:00Z"
+  fi
+  end_time=$start_time
+  if [ $# -gt 4 ]; then
+    end_time=$5
+  fi
 fi
 
 # Experiment
-exp="CY49DT_OFFLINE_dt_2_5_2500x2500_control"
+exp="CY49DT_OFFLINE_dt_2_5_2500x2500_EXP_DT"
 
 # Platform specific variables
 [ "$scratch" == "" ] && echo "scratch not set!" && exit 1
@@ -31,22 +42,27 @@ exp="CY49DT_OFFLINE_dt_2_5_2500x2500_control"
 export PATH=${micromamba_path}/bin/:$PATH
 
 # Experiment specific
-config="dt_offline_dt_2_5_2500x2500_control.toml"
+config="dt_offline_dt_2_5_2500x2500_exp_dt.toml"
 domain="surfexp/data/config/domains/dt_2_5_2500x2500.toml"
+domain_name="DT_2_5_2500x2500"
 
-# Staging environment
-if [ "$USER" == "sbu" ]; then
-  config="dt_offline_dt_2_5_50x60_running.toml"
-  domain="surfexp/data/config/domains/DRAMMEN.toml"
-  domain_name="DRAMMEN"
-  exp="CY49DT_OFFLINE_dt_2_5_50x60_control"
-fi
-
+set -x
 cd $plugin_home
-echo $PATH
 
-mods="mods_control.toml"
+mods="mods_run.toml"
 cat > $mods << EOF
+[general]
+  max_tasks = 60
+
+[general.times]
+  start = "$start_time"
+  end = "$end_time"
+
+[system]
+   casedir = "$scratch/surfexp/@CASE@"
+
+[platform]
+  scratch = "$scratch"
 
 [scheduler.ecfvars]
   ecf_files = "$ecf_dir/ecf_files"
@@ -56,13 +72,26 @@ cat > $mods << EOF
   ecf_out = "$ecf_dir/jobout"
 
 [suite_control]
-  run_cmd = "$plugin_home/bin/run.sh $host_file $plugin_home"
+  create_static_data = true
+  create_time_dependent_suite = true
+  do_archiving = true
+  do_cleaning = true
+  do_extractsqlite = true
+  do_marsprep = true
+  do_pgd = false
+  do_PrefetchMars = true
+  do_prep = $do_prep
 
-[system]
-   casedir = "$scratch/surfexp/@CASE@"
-
-[platform]
-  scratch = "$scratch"
+[submission]
+  bindir = "$binaries_de"
+[submission.task_exceptions.Forecast]
+  bindir = "$binaries_de"
+[submission.task_exceptions.Pgd]
+  bindir = "$binaries_de"
+[submission.task_exceptions.Prep]
+  bindir = "$binaries_opt"
+[submission.task_exceptions.QualityControl.MODULES]
+  PRGENV = ["load", "prgenv/gnu"]
 
 EOF
 
@@ -71,10 +100,11 @@ time poetry run surfExp -o $config \
 --plugin-home $plugin_home  \
 --troika troika \
 surfexp/data/config/configurations/dt.toml \
-surfexp/data/config/configurations/dt_control.toml \
-surfexp/data/config/domains/dt_2_5_2500x2500.toml \
+$domain \
 surfexp/data/config/mods/dev-CY49T2h_deode/dt.toml \
-$mods
+surfexp/data/config/mods/dev-CY49T2h_deode/dt_prep_from_namelist.toml \
+$mods \
+--start-time $start_time \
+--end-time $end_time
 
 time poetry run deode start suite --config-file $config || exit 1
-

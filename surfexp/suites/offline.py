@@ -52,7 +52,7 @@ class SurfexSuiteDefinition(SuiteDefinition):
         self.do_prep = config["suite_control.do_prep"]
         if self.mode == "restart":
             self.do_prep = False
-
+        self.prep_done = False
         input_cycles_ahead = 3
         unique_cycles = get_total_unique_cycle_list(config)
         basetime = as_datetime(config["general.times.basetime"])
@@ -485,6 +485,14 @@ class SurfexSuiteDefinition(SuiteDefinition):
                             EcflowSuiteTrigger(prev_cycle_input),
                         ]
                     )
+                    if self.prep_done:
+                        reforecast_trigger = EcflowSuiteTriggers(
+                            [
+                                EcflowSuiteTrigger(an_forcing),
+                                EcflowSuiteTrigger(prev_cycle_input),
+                                EcflowSuiteTrigger(prev_initialization),
+                            ]
+                        )
                 rerun_fam = EcflowSuiteFamily(
                     "ReForecast", cycle_input, self.ecf_files, trigger=reforecast_trigger
                 )
@@ -577,6 +585,7 @@ class SurfexSuiteDefinition(SuiteDefinition):
                 # Might need an extra trigger for input
 
                 # For now set do_prep False after for next cycles and do cycling
+                self.prep_done = True
                 self.do_prep = False
 
             else:
@@ -928,7 +937,11 @@ class SurfexSuiteDefinition(SuiteDefinition):
                     with contextlib.suppress(KeyError):
                         ver_vars = config[f"verification.{mode}.variables"]
                         if len(ver_vars) > 0:
-                            do_verification = True
+                            cycle_and_prep = False
+                            if mode == "cycle" and self.prep_done:
+                                cycle_and_prep = True
+                            if not cycle_and_prep:
+                                do_verification = True
 
             do_postproc = False
             if do_verification:
