@@ -2,7 +2,7 @@
 
 if [ $# -ne 2 -a $# -ne 4 -a $# -ne 5 ]; then
   echo "Usage: $0 host-file plugin_home [prep iso-date [iso-end-date]]"
-  echo "$0 $PWD/envs/ATOS-Bologna $PWD false 2025-01-01T00:00:00Z 2025-01-02T00:00:00Z"
+  echo "$0 $PWD/envs/ATOS-Bologna $PWD true 2025-01-01T00:00:00Z 2025-01-02T00:00:00Z"
   exit 1
 else
   echo
@@ -30,7 +30,7 @@ else
 fi
 
 # Experiment
-exp="CY49DT_OFFLINE_dt_2_5_2500x2500"
+exp="CY49DT_OFFLINE_dt_2_5_2500x2500_EXP_DT"
 
 # Platform specific variables
 [ "$scratch" == "" ] && echo "scratch not set!" && exit 1
@@ -42,7 +42,7 @@ exp="CY49DT_OFFLINE_dt_2_5_2500x2500"
 export PATH=${micromamba_path}/bin/:$PATH
 
 # Experiment specific
-config="dt_offline_dt_2_5_2500x2500_running.toml"
+config="dt_offline_dt_2_5_2500x2500_exp_dt.toml"
 domain="surfexp/data/config/domains/dt_2_5_2500x2500.toml"
 domain_name="DT_2_5_2500x2500"
 
