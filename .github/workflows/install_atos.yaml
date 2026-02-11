@@ -2,9 +2,13 @@
 name: Install surfExp on ATOS
 
 on:
-  push:
-    tags:
-      - '*'
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Tag name to install in /perm/aut6432/DE_surfExp/'
+        type: string
+        required: true
+
   workflow_call:
     secrets:
       HPC_CI_SSH_USER:
@@ -13,6 +17,8 @@ on:
         required: true
 jobs:
     install:
+      env:
+        GITHUB_BRANCH: ${{ github.ref_name }}
       name: "Install surfExp"
       runs-on: [hpc]
       steps:
@@ -28,10 +34,11 @@ jobs:
           echo "${{ secrets.AUT6432_SSH }}" > ssh_key
           chmod 600 ssh_key
 
-          # Replace dots by undercores in tag name
-          tag_name=`echo $GITHUB_REF_NAME | sed -e s#\\.#_#g`
+          tag_name=${{ inputs.tag_name }}
+          #branch=deode_production
+          # TEST
+          branch=deode_master
           install_dir="/perm/aut6432/DE_surfExp/$tag_name"
-          branch="deode_production"
           echo "install_dir: $install_dir"
           echo "branch $branch"
 
@@ -46,6 +53,7 @@ jobs:
 
           # Sanity checks
           [ -d $install_dir ] && echo "$install_dir already exists!" && exit 1
+          mkdir -p $install_dir
           cd $install_dir || exit 1
 
           echo "Cloning surfExp (branch: $branch) into $install_dir"
@@ -62,7 +70,7 @@ jobs:
           echo "Installing surfExp in $install_dir/surfExp"
           cd $install_dir/surfExp || exit 1
 
-          ./bin/install.sh $PWD/envs/ATOS-Bologna $PWD  || exit 1
+          #./bin/install.sh $PWD/envs/ATOS-Bologna $PWD  || exit 1
           EOF
 
     
