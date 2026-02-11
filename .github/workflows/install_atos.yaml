@@ -69,7 +69,7 @@ jobs:
           echo "Installing surfExp in $install_dir/surfExp"
           cd $install_dir/surfExp || exit 1
 
-          ./bin/install.sh $PWD/envs/ATOS-Bologna $PWD  || exit 1
+          ./bin/install.sh $install_dir/surfExp/envs/ATOS-Bologna $install_dir/surfExp  || exit 1
           EOF
 
     
