@@ -6,7 +6,7 @@ How to update the daily runs
 - Log into https://github.com/destination-earth-digital-twins/surfExp
 - Under Actions, select the workflow: *"Install surfExp on ATOS"* . Click on *"Run workflow"*, and type in a name which will be the tag name installed in `/perm/aut6432/DE_surfExp/`
 
-  ![](https://github.com/destination-earth-digital-twins/surfExp/blob/docs/assets/install_on_atos.png?raw=true)
+  ![](https://github.com/destination-earth-digital-twins/surfExp/blob/deode_master/docs/assets/install_on_atos.png?raw=true)
   
 - Log in on ATOS-Bologna as aut6432 user and enter `/perm/aut6432/DE_surfExp/[tag-name]/surfExp`
 - Run `./bin/control.sh $PWD/envs/ATOS-Bologna $PWD`
