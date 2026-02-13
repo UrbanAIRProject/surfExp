@@ -886,6 +886,8 @@ class Qc2obsmon(PySurfexBaseTask):
             self.var_name = self.config["task.args.var_name"]
         except KeyError:
             self.var_name = None
+        try:                                                      
+            self.offset = int(self.config["task.args.offset"])
             fcint = self.config["general.times.cycle_length"]
             fcint = as_timedelta(f"{fcint}")
         except KeyError:
