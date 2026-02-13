@@ -984,14 +984,17 @@ class FirstGuess4OI(PySurfexBaseTask):
             self.var_name = None
         try:
             self.offset = int(self.config["task.args.offset"])
+            fcint = self.config["general.times.cycle_length"]
+            fcint = as_timedelta(f"{fcint}")
         except KeyError:
             self.offset = 0
+            fcint = as_timedelta("PT0H")
         try:
             self.mode = self.config["task.args.mode"]
         except KeyError:
             raise RuntimeError from KeyError
 
-        self.validtime = self.basetime - as_timedelta(f"{self.offset:02d}:00:00")
+        self.validtime = self.basetime - fcint + as_timedelta(f"{self.offset:02d}:00:00")
         logger.info("basetime: {}", self.basetime)
         logger.info("validtime: {}", self.validtime)
 
