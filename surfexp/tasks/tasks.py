@@ -886,15 +886,19 @@ class Qc2obsmon(PySurfexBaseTask):
             self.var_name = self.config["task.args.var_name"]
         except KeyError:
             self.var_name = None
-        try:
-            self.offset = int(self.config["task.args.offset"])
+            fcint = self.config["general.times.cycle_length"]
+            fcint = as_timedelta(f"{fcint}")
         except KeyError:
             self.offset = 0
+            fcint = as_timedelta("PT0H")
         try:
             self.mode = self.config["task.args.mode"]
         except KeyError:
             raise RuntimeError("Mode not set") from KeyError
-        self.validtime = self.basetime - as_timedelta(f"{self.offset:02d}:00:00")
+        self.validtime = self.basetime - fcint + as_timedelta(f"{self.offset:02d}:00:00")
+        self.an_time = self.basetime
+        if self.offset > 0:
+            self.an_time = self.validtime
 
     def execute(self):
         """Execute."""
@@ -956,7 +960,8 @@ class Qc2obsmon(PySurfexBaseTask):
                 "-o",
                 output,
             ]
-            argv += [self.basetime.strftime("%Y%m%d%H"), var_name, q_c]
+            argv += [self.an_time.strftime("%Y%m%d%H"), var_name, q_c]
+            logger.info("argv: {}", argv)
             qc2obsmon(argv)
 
 
